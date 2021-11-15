@@ -112,7 +112,6 @@
             strokeOpacity, // stroke opacity for borders
           } = {}
         ) {
-          const zoom = d3.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
           // Compute values.
           const N = d3.map(data, id);
           const V = d3.map(data, value).map((d) => (d == null ? NaN : +d));
@@ -180,8 +179,7 @@
             .attr("fill", (d, i) => color(V[Im.get(If[i])]))
             .attr("d", path)
             .append("title")
-            .text((d, i) => title(d, Im.get(If[i])))
-            .on("click", clicked);
+            .text((d, i) => title(d, Im.get(If[i])));
 
           if (borders != null)
             svg
