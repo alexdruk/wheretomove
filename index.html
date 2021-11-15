@@ -19,21 +19,6 @@
         pointer-events: all;
       }
 
-      .feature {
-        fill: #ccc;
-        cursor: pointer;
-      }
-
-      .feature.active {
-        fill: orange;
-      }
-
-      .mesh {
-        fill: none;
-        stroke: #fff;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
       /* Tooltip */
       div.tooltip {
         position: absolute;
@@ -127,6 +112,7 @@
             strokeOpacity, // stroke opacity for borders
           } = {}
         ) {
+          const zoom = d3.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
           // Compute values.
           const N = d3.map(data, id);
           const V = d3.map(data, value).map((d) => (d == null ? NaN : +d));
@@ -194,7 +180,8 @@
             .attr("fill", (d, i) => color(V[Im.get(If[i])]))
             .attr("d", path)
             .append("title")
-            .text((d, i) => title(d, Im.get(If[i])));
+            .text((d, i) => title(d, Im.get(If[i])))
+            .on("click", clicked);
 
           if (borders != null)
             svg
