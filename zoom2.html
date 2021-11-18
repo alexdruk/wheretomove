@@ -1,0 +1,277 @@
+<html>
+  <head>
+    <title>D3 v7 Example</title>
+    <style>
+      body {
+        font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+        font-size: 15pt;
+      }
+      h1 {
+        text-align: center;
+        font-weight: 500;
+      }
+      svg {
+        display: block;
+        margin: auto;
+      }
+      .background {
+        fill: none;
+        pointer-events: all;
+      }
+
+      /* Tooltip */
+      div.tooltip {
+        position: absolute;
+        visibility: hidden;
+        font-size: 60%;
+        color: #333333;
+        background-color: #e6e6e6;
+        opacity: 0.95;
+        padding: 5px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  </head>
+  <body>
+    <h1>ZOOM 2</h1>
+    <div id="legend"></div>
+    <div id="map" style="margin-top: 50px"></div>
+    <div class="tooltip"></div>
+    <script>
+      // Copyright 2021 Observable, Inc.
+      // Released under the ISC license.
+      // https://observablehq.com/@d3/choropleth
+      //const unemployment = d3.csv("unemployment-x.csv", ({id, rate}) => ({county: id, rate : +rate}));
+
+      async function ready() {
+        const [unemployment, us] = await Promise.all([
+          d3.csv("unemployment-x.csv"),
+          d3.json("counties-albers-10m.json"),
+        ]);
+
+        const counties = topojson.feature(us, us.objects.counties);
+        const statemap = new Map(
+          topojson.feature(us, us.objects.states).features.map((d) => [d.id, d])
+        );
+        const statemesh = topojson.mesh(
+          us,
+          us.objects.states,
+          (a, b) => a !== b
+        );
+        const scale = d3.scaleQuantize;
+        const range = d3.schemeBlues[9];
+        const domain = [1, 10];
+
+        Choropleth(unemployment, {
+          id: (d) => d.id,
+          value: (d) => d.rate,
+          scale: scale,
+          domain: domain,
+          range: range,
+          title: (f, d) =>
+            `${f.properties.name}, ${
+              statemap.get(f.id.slice(0, 2)).properties.name
+            }\n${d?.rate}%`,
+          features: counties,
+          borders: statemesh,
+          county_borders: counties,
+          width: 975,
+          height: 610,
+        });
+        // Legend(scale(domain, range), {
+        //   title: "Unemployment rate (%)",
+        // });
+
+        function Choropleth(
+          data,
+          {
+            id = (d) => d.id, // given d in data, returns the feature id
+            value = () => undefined, // given d in data, returns the quantitative value
+            title, // given a feature f and possibly a datum d, returns the hover text
+            format, // optional format specifier for the title
+            scale = d3.scaleSequential, // type of color scale
+            domain, // [min, max] values; input of color scale
+            range = d3.interpolateBlues, // output of color scale
+            width = 640, // outer width, in pixels
+            height, // outer height, in pixels
+            projection, // a D3 projection; null for pre-projected geometry
+            features, // a GeoJSON feature collection
+            featureId = (d) => d.id, // given a feature, returns its id
+            borders, // a GeoJSON object for stroking borders
+            county_borders, // a GeoJSON object for stroking county borders
+            outline = projection && projection.rotate
+              ? { type: "Sphere" }
+              : null, // a GeoJSON object for the background
+            unknown = "#ccc", // fill color for missing data
+            fill = "white", // fill color for outline
+            stroke = "white", // stroke color for borders
+            strokeLinecap = "round", // stroke line cap for borders
+            strokeLinejoin = "round", // stroke line join for borders
+            strokeWidth, // stroke width for borders
+            strokeOpacity, // stroke opacity for borders
+          } = {}
+        ) {
+          const zoom = d3.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
+
+          // Compute values.
+          const N = d3.map(data, id);
+          const V = d3.map(data, value).map((d) => (d == null ? NaN : +d));
+          const Im = new d3.InternMap(N.map((id, i) => [id, i]));
+          const If = d3.map(features.features, featureId);
+
+          // Compute default domains.
+          if (domain === undefined) domain = d3.extent(V);
+
+          // Construct scales.
+          const color = scale(domain, range);
+          if (unknown !== undefined) color.unknown(unknown);
+
+          // Compute titles.
+          if (title === undefined) {
+            format = color.tickFormat(100, format);
+            title = (f, i) => `${f.properties.name}\n${format(V[i])}`;
+          } else if (title !== null) {
+            const T = title;
+            const O = d3.map(data, (d) => d);
+            title = (f, i) => T(f, O[i]);
+          }
+
+          // Compute the default height. If an outline object is specified, scale the projection to fit
+          // the width, and then compute the corresponding height.
+          if (height === undefined) {
+            if (outline === undefined) {
+              height = 400;
+            } else {
+              const [[x0, y0], [x1, y1]] = d3
+                .geoPath(projection.fitWidth(width, outline))
+                .bounds(outline);
+              const dy = Math.ceil(y1 - y0),
+                l = Math.min(Math.ceil(x1 - x0), dy);
+              projection
+                .scale((projection.scale() * (l - 1)) / l)
+                .precision(0.2);
+              height = dy;
+            }
+          }
+
+          // Construct a path generator.
+          const path = d3.geoPath(projection);
+
+          const svg = d3
+            .select("#map")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [0, 0, width, height])
+            .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+            .on("click", reset);
+
+          const g = svg.append("g");
+
+          if (outline != null)
+            svg
+              .append("path")
+              .attr("fill", fill)
+              .attr("stroke", "currentColor")
+              .attr("d", path(outline));
+
+          svg
+            .append("g")
+            .attr("cursor", "pointer")
+            .selectAll("path")
+            .data(features.features)
+            .join("path")
+            .attr("fill", (d, i) => color(V[Im.get(If[i])]))
+            .attr("d", path)
+            .append("title")
+            .text((d, i) => title(d, Im.get(If[i])))
+            .attr("pointer-events", "fill")
+            .on("click", clicked);
+
+          //   const states = g
+          //     .append("g")
+          //     .attr("fill", "#444")
+          //     .attr("cursor", "pointer")
+          //     .selectAll("path")
+          //     .data(topojson.feature(us, us.objects.states).features)
+          //     .join("path")
+          //     .on("click", clicked)
+          //     .attr("d", path);
+
+          if (borders != null)
+            svg
+              .append("path")
+              .attr("pointer-events", "none")
+              .attr("fill", "none")
+              .attr("stroke", "grey")
+              .attr("stroke-linecap", strokeLinecap)
+              .attr("stroke-linejoin", strokeLinejoin)
+              .attr("stroke-width", 1.5)
+              .attr("stroke-opacity", 1.0)
+              .attr("d", path(borders));
+
+          if (county_borders != null)
+            svg
+              .append("path")
+              .attr("pointer-events", "none")
+              .attr("fill", "none")
+              .attr("stroke", "black")
+              .attr("stroke-linecap", strokeLinecap)
+              .attr("stroke-linejoin", strokeLinejoin)
+              .attr("stroke-width", 0.5)
+              .attr("stroke-opacity", 0.5)
+              .attr("d", path(county_borders));
+
+          //   svg.call(zoom).on("wheel.zoom", null);
+          svg.call(zoom);
+
+          function reset() {
+            // states.transition().style("fill", null);
+            svg
+              .transition()
+              .duration(750)
+              .call(
+                zoom.transform,
+                d3.zoomIdentity,
+                d3.zoomTransform(svg.node()).invert([width / 2, height / 2])
+              );
+          }
+
+          function clicked(event, d) {
+            const [[x0, y0], [x1, y1]] = path.bounds(d);
+            event.stopPropagation();
+            // states.transition().style("fill", null);
+            d3.select(this).transition().style("fill", "red");
+            svg
+              .transition()
+              .duration(750)
+              .call(
+                zoom.transform,
+                d3.zoomIdentity
+                  .translate(width / 2, height / 2)
+                  .scale(
+                    Math.min(
+                      8,
+                      0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)
+                    )
+                  )
+                  .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
+                d3.pointer(event, this.state.svg.node())
+              );
+          }
+
+          function zoomed(event) {
+            const { transform } = event;
+            svg.attr("transform", transform);
+            svg.attr("stroke-width", 1 / transform.k);
+          }
+
+          //          return Object.assign(svg.node(), { scales: { color } });
+          svg.node();
+        }
+      } //ready
+      ready();
+    </script>
+  </body>
+</html>
