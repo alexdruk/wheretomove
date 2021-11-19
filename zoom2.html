@@ -18,7 +18,21 @@
         fill: none;
         pointer-events: all;
       }
-
+      .center {
+        /* position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%); */
+        /* width: 90%; */
+        /* display: flex;
+        justify-content: center;
+        align-items: center; */
+        margin: auto;
+        width: 90%;
+        border: 1px solid #cececa;
+        padding: 10px;
+        overflow: hidden;
+      }
       /* Tooltip */
       div.tooltip {
         position: absolute;
@@ -36,7 +50,9 @@
   <body>
     <h1>ZOOM 2</h1>
     <div id="legend"></div>
-    <div id="map" style="margin-top: 50px"></div>
+    <div class="center">
+      <div id="map" style="margin-top: 50px"></div>
+    </div>
     <div class="tooltip"></div>
     <script>
       // Copyright 2021 Observable, Inc.
