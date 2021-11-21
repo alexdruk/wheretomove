@@ -50,9 +50,7 @@
   <body>
     <h1>ZOOM 2</h1>
     <div id="legend"></div>
-    <div class="center">
-      <div id="map" style="margin-top: 50px"></div>
-    </div>
+    <div id="map"></div>
     <div class="tooltip"></div>
     <script>
       // Copyright 2021 Observable, Inc.
@@ -90,8 +88,8 @@
               statemap.get(f.id.slice(0, 2)).properties.name
             }\n${d?.rate}%`,
           features: counties,
-          borders: statemesh,
-          county_borders: counties,
+          //   borders: statemesh,
+          //   county_borders: counties,
           width: 975,
           height: 610,
         });
@@ -109,7 +107,8 @@
             scale = d3.scaleSequential, // type of color scale
             domain, // [min, max] values; input of color scale
             range = d3.interpolateBlues, // output of color scale
-            width = 640, // outer width, in pixels
+            // width = 640, // outer width, in pixels
+            width = 975, // outer width, in pixels
             height, // outer height, in pixels
             projection, // a D3 projection; null for pre-projected geometry
             features, // a GeoJSON feature collection
@@ -128,7 +127,7 @@
             strokeOpacity, // stroke opacity for borders
           } = {}
         ) {
-          const zoom = d3.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
+          const zoom = d3.zoom().scaleExtent([1, 2]).on("zoom", zoomed);
 
           // Compute values.
           const N = d3.map(data, id);
@@ -184,6 +183,36 @@
             .on("click", reset);
 
           const g = svg.append("g");
+          svg.on("wheel", (e) => e.preventDefault());
+
+          const counties = g
+            .append("g")
+            .selectAll("path")
+            // .data(topojson.feature(us, us.objects.counties).features.filter(d => d.id.slice(-5,-3,) !== "72"))
+            .data(features.features)
+            .join("path")
+            .attr("fill", (d, i) => color(V[Im.get(If[i])]))
+            //   .attr("fill", d => ((o = dataMap.get(d.id)) && o[method] ) >= threshold.threshold ? "blue" : "#F0F0C2")
+            .attr("d", path)
+            .attr("stroke", "#ccc")
+            .attr("stroke-width", 0.4)
+            .attr("stroke-linejoin", "round")
+            .text((d, i) => title(d, Im.get(If[i])));
+
+          const states = g
+            .append("g")
+            .attr("fill", "transparent")
+            .attr("cursor", "pointer")
+            .selectAll("path")
+            .data(topojson.feature(us, us.objects.states).features)
+            .join("path")
+            .on("click", clicked)
+            .attr("stroke", "grey")
+            .attr("stroke-linecap", strokeLinecap)
+            .attr("stroke-linejoin", strokeLinejoin)
+            .attr("stroke-width", 1)
+            // .attr("stroke-linejoin", "round")
+            .attr("d", path);
 
           if (outline != null)
             svg
@@ -192,58 +221,12 @@
               .attr("stroke", "currentColor")
               .attr("d", path(outline));
 
-          svg
-            .append("g")
-            .attr("cursor", "pointer")
-            .selectAll("path")
-            .data(features.features)
-            .join("path")
-            .attr("fill", (d, i) => color(V[Im.get(If[i])]))
-            .attr("d", path)
-            .append("title")
-            .text((d, i) => title(d, Im.get(If[i])))
-            .attr("pointer-events", "fill")
-            .on("click", clicked);
+          let cl = 0;
 
-          //   const states = g
-          //     .append("g")
-          //     .attr("fill", "#444")
-          //     .attr("cursor", "pointer")
-          //     .selectAll("path")
-          //     .data(topojson.feature(us, us.objects.states).features)
-          //     .join("path")
-          //     .on("click", clicked)
-          //     .attr("d", path);
-
-          if (borders != null)
-            svg
-              .append("path")
-              .attr("pointer-events", "none")
-              .attr("fill", "none")
-              .attr("stroke", "grey")
-              .attr("stroke-linecap", strokeLinecap)
-              .attr("stroke-linejoin", strokeLinejoin)
-              .attr("stroke-width", 1.5)
-              .attr("stroke-opacity", 1.0)
-              .attr("d", path(borders));
-
-          if (county_borders != null)
-            svg
-              .append("path")
-              .attr("pointer-events", "none")
-              .attr("fill", "none")
-              .attr("stroke", "black")
-              .attr("stroke-linecap", strokeLinecap)
-              .attr("stroke-linejoin", strokeLinejoin)
-              .attr("stroke-width", 0.5)
-              .attr("stroke-opacity", 0.5)
-              .attr("d", path(county_borders));
-
-          //   svg.call(zoom).on("wheel.zoom", null);
           svg.call(zoom);
 
           function reset() {
-            // states.transition().style("fill", null);
+            states.transition().style("stroke", null);
             svg
               .transition()
               .duration(750)
@@ -255,35 +238,51 @@
           }
 
           function clicked(event, d) {
+            cl = cl + event.detail;
             const [[x0, y0], [x1, y1]] = path.bounds(d);
             event.stopPropagation();
-            // states.transition().style("fill", null);
-            d3.select(this).transition().style("fill", "red");
-            svg
-              .transition()
-              .duration(750)
-              .call(
-                zoom.transform,
-                d3.zoomIdentity
-                  .translate(width / 2, height / 2)
-                  .scale(
-                    Math.min(
-                      8,
-                      0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)
+            states.transition().style("stroke", null);
+            d3.select(this).raise();
+            if (cl % 2 == 0) {
+              console.log("even");
+              svg
+                .transition()
+                .duration(750)
+                .call(
+                  zoom.transform,
+                  d3.zoomIdentity
+                    .translate(width, height)
+                    .scale(1)
+                    .translate(-(x0 + x1), -(y0 + y1)),
+                  d3.pointer(event, svg.node())
+                );
+            } else {
+              svg
+                .transition()
+                .duration(750)
+                .call(
+                  zoom.transform,
+                  d3.zoomIdentity
+                    .translate(width / 2, height / 2)
+                    .scale(
+                      Math.min(
+                        8,
+                        0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)
+                      )
                     )
-                  )
-                  .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
-                d3.pointer(event, this.state.svg.node())
-              );
+                    .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
+                  d3.pointer(event, svg.node())
+                );
+            } //not even
           }
 
           function zoomed(event) {
             const { transform } = event;
-            svg.attr("transform", transform);
-            svg.attr("stroke-width", 1 / transform.k);
+            g.attr("transform", transform);
+            counties.attr("stroke-width", 0.4 * Math.sqrt(1 / transform.k));
+            states.attr("stroke-width", Math.sqrt(1 / transform.k));
           }
 
-          //          return Object.assign(svg.node(), { scales: { color } });
           svg.node();
         }
       } //ready
