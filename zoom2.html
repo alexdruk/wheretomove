@@ -18,45 +18,17 @@
         fill: none;
         pointer-events: all;
       }
-      .center {
-        /* position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%); */
-        /* width: 90%; */
-        /* display: flex;
-        justify-content: center;
-        align-items: center; */
-        margin: auto;
-        width: 90%;
-        border: 1px solid #cececa;
-        padding: 10px;
-        overflow: hidden;
-      }
-      /* Tooltip */
-      div.tooltip {
-        position: absolute;
-        visibility: hidden;
-        font-size: 60%;
-        color: #333333;
-        background-color: #e6e6e6;
-        opacity: 0.95;
-        padding: 5px;
-      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
   </head>
   <body>
     <h1>ZOOM 2</h1>
-    <div id="legend"></div>
     <div id="map"></div>
-    <div class="tooltip"></div>
     <script>
       // Copyright 2021 Observable, Inc.
       // Released under the ISC license.
       // https://observablehq.com/@d3/choropleth
-      //const unemployment = d3.csv("unemployment-x.csv", ({id, rate}) => ({county: id, rate : +rate}));
 
       async function ready() {
         const [unemployment, us] = await Promise.all([
@@ -188,11 +160,9 @@
           const counties = g
             .append("g")
             .selectAll("path")
-            // .data(topojson.feature(us, us.objects.counties).features.filter(d => d.id.slice(-5,-3,) !== "72"))
             .data(features.features)
             .join("path")
             .attr("fill", (d, i) => color(V[Im.get(If[i])]))
-            //   .attr("fill", d => ((o = dataMap.get(d.id)) && o[method] ) >= threshold.threshold ? "blue" : "#F0F0C2")
             .attr("d", path)
             .attr("stroke", "#ccc")
             .attr("stroke-width", 0.4)
@@ -211,7 +181,6 @@
             .attr("stroke-linecap", strokeLinecap)
             .attr("stroke-linejoin", strokeLinejoin)
             .attr("stroke-width", 1)
-            // .attr("stroke-linejoin", "round")
             .attr("d", path);
 
           if (outline != null)
@@ -244,18 +213,7 @@
             states.transition().style("stroke", null);
             d3.select(this).raise();
             if (cl % 2 == 0) {
-              console.log("even");
-              svg
-                .transition()
-                .duration(750)
-                .call(
-                  zoom.transform,
-                  d3.zoomIdentity
-                    .translate(width, height)
-                    .scale(1)
-                    .translate(-(x0 + x1), -(y0 + y1)),
-                  d3.pointer(event, svg.node())
-                );
+              reset();
             } else {
               svg
                 .transition()
