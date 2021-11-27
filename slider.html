@@ -13,13 +13,10 @@
       svg {
         display: block;
         margin: auto;
-      }
-      .background {
-        fill: none;
-        pointer-events: all;
+        border: 1px solid #eee;
       }
       #menu {
-        position: absolute;
+        position: relative;
         top: 80px;
         left: 50px;
       }
@@ -54,8 +51,30 @@
         margin-left: 10px;
         margin-right: 50px;
       }
-      svg {
-        border: 1px solid #eee;
+      .row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .column {
+        display: flex;
+        flex-direction: column;
+        flex-basis: 100%;
+        flex: auto;
+        align-items: center;
+      }
+
+      /* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+      @media only screen and (max-width: 1000px) {
+        .row {
+          /* it place the items in vertical direction */
+          flex-direction: column;
+        }
+        .column {
+          width: 100%;
+        }
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
@@ -63,73 +82,136 @@
   </head>
   <body>
     <h1>Slider</h1>
-    <div id="menu">
-      <div class="slider item">
-        <div class="label">
-          Avoid storm events (<span class="val" id="stromeventsVal">5</span>)
-        </div>
-        <div>
-          <span class="low">1</span>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            value="5"
-            class="slider"
-            id="stromevents"
-            oninput="updateVal(this.value, 'stromeventsVal')"
-          />
-          <span class="high">10</span>
+    <div class="row">
+      <div class="column">
+        <div id="menu">
+          <div class="slider item">
+            <div class="label">
+              Avoid overpopulated counties (<span class="val" id="popDensityVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="popDensity"
+                onchange="ready()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with high home prices (<span
+                class="val"
+                id="homeValVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="homeVal"
+                onchange="ready()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with high home rent (<span
+                class="val"
+                id="homeRentVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="homeRent"
+                onchange="ready()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with low personal income (wrong!) (<span
+                class="val"
+                id="persIncomeVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="persIncome"
+                onchange="ready()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with low education levels (<span
+                class="val"
+                id="bachelorVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="bachelor"
+                onchange="ready()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="slider item">
-        <div class="label">
-          Avoid precipitation anomalies (<span
-            class="val"
-            id="precipitationAnomaliesVal"
-            >5</span
-          >)
-        </div>
-        <div>
-          <span class="low">1</span>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            value="5"
-            class="slider"
-            id="precipitationAnomalies"
-            oninput="updateVal(this.value,  'precipitationAnomaliesVal')"
-          />
-          <span class="high">10</span>
-        </div>
+      <div class="column" style="margin-top: 80px">
+        <div id="map"></div>
       </div>
     </div>
-    <script>
-      function updateVal(val, target) {
-        document.getElementById(target).innerHTML = val;
-      }
-      //   let sliders = document.getElementsByClassName("slider");
-      //   let outputs = document.getElementsByClassName("val");
-      //   for (let i = 0; i < sliders.length; i++) {
-      //      sliders[i].oninput = function () {
-      //       outputs[i].innerHTML = sliders[i].value;
-      //     };
-      //   }
-    </script>
-
-    <div id="map"></div>
     <script>
       // Copyright 2021 Observable, Inc.
       // Released under the ISC license.
       // https://observablehq.com/@d3/choropleth
 
       async function ready() {
+        // document.getElementById("map").innerHTML = "";
         const [data, us] = await Promise.all([
-          d3.csv("stormevents.csv"),
+          d3.csv("final.csv"),
           d3.json("counties-albers-10m.json"),
         ]);
-
+        const newData = processInputs(data);
+        // console.table(sortDataDesc(data, "result"));
         const counties = topojson.feature(us, us.objects.counties);
         const statemap = new Map(
           topojson.feature(us, us.objects.states).features.map((d) => [d.id, d])
@@ -140,12 +222,22 @@
           (a, b) => a !== b
         );
         const scale = d3.scaleQuantize;
-        const range = d3.schemeBlues[9];
-        const domain = [1, 10];
+        const range = [
+          "#ffffff",
+          "#e5f5f9",
+          "#ccece6",
+          "#99d8c9",
+          "#66c2a4",
+          "#41ae76",
+          "#238b45",
+          "#006d2c",
+          "#00441b",
+        ];
+        const domain = [0, 5]; // should be number of questions
 
-        Choropleth(data, {
-          id: (d) => d.id,
-          value: (d) => d.rank,
+        Choropleth(newData, {
+          id: (d) => d.fips_id,
+          value: (d) => d.result,
           scale: scale,
           domain: domain,
           range: range,
@@ -164,7 +256,7 @@
         // });
 
         function Choropleth(
-          data,
+          newData,
           {
             id = (d) => d.id, // given d in data, returns the feature id
             value = () => undefined, // given d in data, returns the quantitative value
@@ -250,6 +342,7 @@
 
           const g = svg.append("g");
           svg.on("wheel", (e) => e.preventDefault());
+          svg.on("dblclick", (e) => e.preventDefault());
 
           const counties = g
             .append("g")
@@ -257,6 +350,7 @@
             .data(features.features)
             .join("path")
             .attr("fill", (d, i) => color(V[Im.get(If[i])]))
+            .attr("id", (d, i) => "county" + N[i])
             .attr("d", path)
             .attr("stroke", "#ccc")
             .attr("stroke-width", 0.4)
@@ -334,22 +428,65 @@
             counties.attr("stroke-width", 0.4 * Math.sqrt(1 / transform.k));
             states.attr("stroke-width", Math.sqrt(1 / transform.k));
           }
-          function initMenu() {
-            d3.select("#menu")
-              .selectAll(".slider.item input")
-              .on("input", function (d) {
-                let attr = d3.select(this).attr("name");
-                state[attr] = this.value;
-                d3.select(this.parentNode.parentNode)
-                  .select(".value")
-                  .text(this.value);
-                update();
-              });
-          } //initMenu
+
           svg.node();
         }
       } //ready
       ready();
+      function getInputs() {
+        let inputsVals = [];
+        let inputs = document.getElementsByTagName("input");
+        for (let i = 0; i < inputs.length; ++i) {
+          let id = inputs[i].id;
+          let val = inputs[i].value;
+          let labelId = id + "Val";
+          document.getElementById(labelId).innerHTML = val;
+          inputsVals.push({ id: id, val: val });
+        }
+        // console.log(Object.entries(inputsVals));
+        return inputsVals;
+      } //getInputs
+
+      function processInputs(data) {
+        let inputs = getInputs();
+        const columnNames = Object.keys(data[0]);
+        // set result to 0
+        for (let i = 0; i < data.length; ++i) {
+          data[i].result = 0;
+        }
+        // console.table(data);
+        for (let i = 1; i < columnNames.length - 1; i++) {
+          let sortedData = sortDataAsc(data, columnNames[i]);
+          let carrentInput = inputs.find(
+            (inputs) => inputs.id === columnNames[i]
+          );
+          //   console.log("carrentInput.val", carrentInput.val);
+          let slicedData = [];
+          if (carrentInput.val < 2) {
+            slicedData = sortedData;
+          } else if (carrentInput.val > 9) {
+            slicedData = [];
+          } else {
+            slicedData = sortedData.slice(
+              0,
+              Math.round(sortedData.length * (1 - carrentInput.val / 10))
+            );
+          }
+          console.log(slicedData.length);
+          for (let ind = 0; ind < slicedData.length; ind++) {
+            slicedData[ind].result = slicedData[ind].result + 1;
+          }
+        } //for
+        // console.log(sortDataDesc(data, "result")[0]);
+        return data;
+      } // end processInputs()
+
+      function sortDataAsc(data, key) {
+        return data.sort((a, b) => a[key] - b[key]);
+      } //end sortData
+      function sortDataDesc(data, key) {
+        return data.sort((a, b) => b[key] - a[key]);
+      } //end sortData
     </script>
   </body>
 </html>
