@@ -16,7 +16,7 @@
       }
       .background {
         fill: none;
-        pointer-events: all;
+        pointer-events: none;
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
@@ -45,8 +45,8 @@
           us.objects.states,
           (a, b) => a !== b
         );
-        const scale = d3.scaleQuantize;
-        const range = d3.schemeBlues[9];
+        const scale = d3.scaleSequential;
+        const range = d3.schemeGreens[5];
         const domain = [1, 10];
 
         Choropleth(unemployment, {
@@ -78,7 +78,7 @@
             format, // optional format specifier for the title
             scale = d3.scaleSequential, // type of color scale
             domain, // [min, max] values; input of color scale
-            range = d3.interpolateBlues, // output of color scale
+            range = d3.interpolateRainbow, // output of color scale
             // width = 640, // outer width, in pixels
             width = 975, // outer width, in pixels
             height, // outer height, in pixels
@@ -155,7 +155,11 @@
             .on("click", reset);
 
           const g = svg.append("g");
-          svg.on("wheel", (e) => e.preventDefault());
+          svg
+            .on("wheel.zoom", null)
+            .on("mousewheel.zoom", null)
+            .on("dblclick", null)
+            .on("dblclick.zoom", null);
 
           const counties = g
             .append("g")
