@@ -17,7 +17,7 @@
       }
       #menu {
         position: relative;
-        top: 80px;
+        top: 90px;
         left: 50px;
       }
 
@@ -100,7 +100,7 @@
                 value="5"
                 class="slider"
                 id="popDensity"
-                onchange="ready()"
+                onchange="changeColor()"
               />
               <span class="high">10</span>
             </div>
@@ -122,7 +122,7 @@
                 value="5"
                 class="slider"
                 id="homeVal"
-                onchange="ready()"
+                onchange="changeColor()"
               />
               <span class="high">10</span>
             </div>
@@ -144,7 +144,7 @@
                 value="5"
                 class="slider"
                 id="homeRent"
-                onchange="ready()"
+                onchange="changeColor()"
               />
               <span class="high">10</span>
             </div>
@@ -166,7 +166,7 @@
                 value="5"
                 class="slider"
                 id="persIncome"
-                onchange="ready()"
+                onchange="changeColor()"
               />
               <span class="high">10</span>
             </div>
@@ -188,7 +188,7 @@
                 value="5"
                 class="slider"
                 id="bachelor"
-                onchange="ready()"
+                onchange="changeColor()"
               />
               <span class="high">10</span>
             </div>
@@ -203,13 +203,16 @@
       // Copyright 2021 Observable, Inc.
       // Released under the ISC license.
       // https://observablehq.com/@d3/choropleth
-
-      async function ready() {
-        // document.getElementById("map").innerHTML = "";
-        const [data, us] = await Promise.all([
+      let data, us;
+      async function getDataFromFiles() {
+        [data, us] = await Promise.all([
           d3.csv("final.csv"),
           d3.json("counties-albers-10m.json"),
         ]);
+      }
+      async function ready() {
+        await getDataFromFiles();
+        // document.getElementById("map").innerHTML = "";
         const newData = processInputs(data);
         // console.table(sortDataDesc(data, "result"));
         const counties = topojson.feature(us, us.objects.counties);
@@ -224,6 +227,7 @@
         const scale = d3.scaleQuantize;
         const range = [
           "#ffffff",
+          "#f7fcf5",
           "#e5f5f9",
           "#ccece6",
           "#99d8c9",
@@ -233,7 +237,7 @@
           "#006d2c",
           "#00441b",
         ];
-        const domain = [0, 5]; // should be number of questions
+        const domain = [0, document.getElementsByTagName("input").length]; // should be number of questions
 
         Choropleth(newData, {
           id: (d) => d.fips_id,
@@ -348,7 +352,7 @@
             .data(features.features)
             .join("path")
             .attr("fill", (d, i) => color(V[Im.get(If[i])]))
-            .attr("id", (d, i) => "county" + N[i])
+            .attr("id", (d) => "county" + d.id)
             .attr("d", path)
             .attr("stroke", "#ccc")
             .attr("stroke-width", 0.4)
@@ -470,7 +474,7 @@
               Math.round(sortedData.length * (1 - carrentInput.val / 10))
             );
           }
-          console.log(slicedData.length);
+          //   console.log(slicedData.length);
           for (let ind = 0; ind < slicedData.length; ind++) {
             slicedData[ind].result = slicedData[ind].result + 1;
           }
@@ -478,6 +482,23 @@
         // console.log(sortDataDesc(data, "result")[0]);
         return data;
       } // end processInputs()
+
+      async function changeColor() {
+        let inputs = getInputs();
+        console.table(inputs);
+        for (let i = 0; i < data.length; ++i) {
+          //   let carrentInput = inputs.find(
+          // (inputs) => inputs.id === columnNames[i]
+          //   );
+          //   console.log("carrentInput.val", carrentInput.val);
+          let elem = document.getElementById("county" + data[i].fips_id);
+          if (elem) {
+            elem.setAttribute("fill", "blue");
+          } else {
+            console.log("elem not found");
+          }
+        }
+      } // end changeColor()
 
       function sortDataAsc(data, key) {
         return data.sort((a, b) => a[key] - b[key]);
