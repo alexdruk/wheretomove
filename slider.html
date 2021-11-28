@@ -341,8 +341,6 @@
             .on("click", reset);
 
           const g = svg.append("g");
-          svg.on("wheel", (e) => e.preventDefault());
-          svg.on("dblclick", (e) => e.preventDefault());
 
           const counties = g
             .append("g")
@@ -380,7 +378,7 @@
 
           let cl = 0;
 
-          svg.call(zoom);
+          svg.call(zoom).on("wheel.zoom", null).on("dblclick.zoom", null);
 
           function reset() {
             states.transition().style("stroke", null);
