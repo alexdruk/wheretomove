@@ -204,6 +204,19 @@
       // Released under the ISC license.
       // https://observablehq.com/@d3/choropleth
       let data, us;
+      const range = [
+        "#ffffff",
+        "#f7fcf5",
+        "#e5f5f9",
+        "#ccece6",
+        "#99d8c9",
+        "#66c2a4",
+        "#41ae76",
+        "#238b45",
+        "#006d2c",
+        "#00441b",
+      ];
+
       async function getDataFromFiles() {
         [data, us] = await Promise.all([
           d3.csv("final.csv"),
@@ -226,18 +239,6 @@
           (a, b) => a !== b
         );
         const scale = d3.scaleQuantize;
-        const range = [
-          "#ffffff",
-          "#f7fcf5",
-          "#e5f5f9",
-          "#ccece6",
-          "#99d8c9",
-          "#66c2a4",
-          "#41ae76",
-          "#238b45",
-          "#006d2c",
-          "#00441b",
-        ];
         const domain = [0, document.getElementsByTagName("input").length]; // should be number of questions
 
         Choropleth(newData, {
@@ -436,6 +437,7 @@
         }
       } //ready
       ready();
+
       function getInputs() {
         let inputsVals = [];
         let inputs = document.getElementsByTagName("input");
@@ -485,16 +487,11 @@
       } // end processInputs()
 
       async function changeColor() {
-        let inputs = getInputs();
-        console.table(inputs);
+        processInputs(data);
         for (let i = 0; i < data.length; ++i) {
-          //   let carrentInput = inputs.find(
-          // (inputs) => inputs.id === columnNames[i]
-          //   );
-          //   console.log("carrentInput.val", carrentInput.val);
           let elem = document.getElementById("county" + data[i].fips_id);
           if (elem) {
-            elem.setAttribute("fill", "blue");
+            elem.setAttribute("fill", range[data[i].result]);
           } else {
             console.log("elem not found");
           }
