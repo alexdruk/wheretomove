@@ -87,7 +87,9 @@
         <div id="menu">
           <div class="slider item">
             <div class="label">
-              Avoid overpopulated counties (<span class="val" id="popDensityVal"
+              Avoid counties with too much sunshine (<span
+                class="val"
+                id="sunshineVal"
                 >5</span
               >)
             </div>
@@ -99,7 +101,181 @@
                 max="10"
                 value="5"
                 class="slider"
-                id="popDensity"
+                id="sunshine"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with abundant heat waves (<span
+                class="val"
+                id="heatwavesVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="heatwaves"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with abundant storms (<span
+                class="val"
+                id="stormVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="storm"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with long drought (<span
+                class="val"
+                id="droughtVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="drought"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with abundant wild fires (<span
+                class="val"
+                id="firesVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="fires"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with high state taxation (<span
+                class="val"
+                id="taxesVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="taxes"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with ahigh cost of living (<span
+                class="val"
+                id="costlivingVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="costliving"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties poor education (<span class="val" id="eduVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="edu"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with high crime level (<span
+                class="val"
+                id="crimeVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="crime"
                 onchange="changeColor()"
               />
               <span class="high">10</span>
@@ -109,29 +285,7 @@
             <div class="label">
               Avoid counties with high home prices (<span
                 class="val"
-                id="homeValVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
                 id="homeVal"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with high home rent (<span
-                class="val"
-                id="homeRentVal"
                 >5</span
               >)
             </div>
@@ -143,57 +297,33 @@
                 max="10"
                 value="5"
                 class="slider"
-                id="homeRent"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with low personal income (wrong!) (<span
-                class="val"
-                id="persIncomeVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="persIncome"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with low education levels (<span
-                class="val"
-                id="bachelorVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="bachelor"
+                id="home"
                 onchange="changeColor()"
               />
               <span class="high">10</span>
             </div>
           </div>
         </div>
+        <!--div class="slider item">
+          <div class="label">
+            Avoid counties with high home rent (<span class="val" id="rentVal"
+              >1</span
+            >)
+          </div>
+          <div>
+            <span class="low">1</span>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value="1"
+              class="slider"
+              id="rent"
+              onchange="changeColor()"
+            />
+            <span class="high">10</span>
+          </div>
+        </div -->
       </div>
       <div class="column" style="margin-top: 80px">
         <div id="map"></div>
@@ -460,17 +590,19 @@
           data[i].result = 0;
         }
         // console.table(data);
-        for (let i = 1; i < columnNames.length - 1; i++) {
+        for (let i = 3; i < columnNames.length - 1; i++) {
+          // for (let i = 3; i < columnNames.length - 1; i++) {
           let sortedData = sortDataAsc(data, columnNames[i]);
           let carrentInput = inputs.find(
             (inputs) => inputs.id === columnNames[i]
           );
+          // console.log("carrentInput", carrentInput);
           //   console.log("carrentInput.val", carrentInput.val);
           let slicedData = [];
           if (carrentInput.val < 2) {
             slicedData = sortedData;
-          } else if (carrentInput.val > 9) {
-            slicedData = [];
+            // } else if (carrentInput.val > 9) {
+            //   slicedData = [];
           } else {
             slicedData = sortedData.slice(
               0,
@@ -483,6 +615,7 @@
           }
         } //for
         // console.log(sortDataDesc(data, "result")[0]);
+        // console.table(data);
         return data;
       } // end processInputs()
 
@@ -492,6 +625,7 @@
           let elem = document.getElementById("county" + data[i].fips_id);
           if (elem) {
             elem.setAttribute("fill", range[data[i].result]);
+            // console.log("data[i].result", data[i].result, "range[data[i].result]", range[data[i].result]);
           } else {
             console.log("elem not found");
           }
