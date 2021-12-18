@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
   <head>
     <title>D3 v7 Example</title>
@@ -64,6 +65,16 @@
         flex-basis: 100%;
         flex: auto;
         align-items: center;
+      }
+      /* Tooltip */
+      div.tooltip {
+        position: absolute;
+        visibility: hidden;
+        font-size: 60%;
+        color: #333333;
+        background-color: #e6e6e6;
+        opacity: 0.95;
+        padding: 5px;
       }
 
       /* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
@@ -327,6 +338,7 @@
       </div>
       <div class="column" style="margin-top: 80px">
         <div id="map"></div>
+        <div class="tooltip"></div>
       </div>
     </div>
     <script>
@@ -377,12 +389,12 @@
           scale: scale,
           domain: domain,
           range: range,
-          //   title: (f, d) =>
-          //     `${f.properties.name}, ${
-          //       statemap.get(f.id.slice(0, 2)).properties.name
-          //     }\n${d?.rank}%`,
+          title: (f, d) =>
+            `${f.properties.name}, ${
+              statemap.get(f.id.slice(0, 2)).properties.name
+            }`,
           features: counties,
-          //   borders: statemesh,
+          borders: statemesh,
           //   county_borders: counties,
           width: 975,
           height: 610,
@@ -437,10 +449,7 @@
           if (unknown !== undefined) color.unknown(unknown);
 
           // Compute titles.
-          if (title === undefined) {
-            format = color.tickFormat(100, format);
-            title = (f, i) => `${f.properties.name}\n${format(V[i])}`;
-          } else if (title !== null) {
+          if (title !== null) {
             const T = title;
             const O = d3.map(data, (d) => d);
             title = (f, i) => T(f, O[i]);
@@ -478,6 +487,20 @@
 
           const g = svg.append("g");
 
+          // svg
+          //   .append("g")
+          //   .selectAll("path")
+          //   .data(features.features)
+          //   .join("path")
+          //   .attr("fill", (d, i) => color(V[Im.get(If[i])]))
+          //   .attr("id", (d) => "county" + d.id)
+          //   .attr("d", path)
+          //   // .attr("stroke", "#bfbfbf")
+          //   // .attr("stroke-width", 0.6)
+          //   // .attr("stroke-linejoin", "round")
+          //   .append("title")
+          //   .text((d, i) => title(d, Im.get(If[i])));
+
           const counties = g
             .append("g")
             .selectAll("path")
@@ -489,6 +512,7 @@
             .attr("stroke", "#bfbfbf")
             .attr("stroke-width", 0.6)
             .attr("stroke-linejoin", "round")
+            .append("title")
             .text((d, i) => title(d, Im.get(If[i])));
 
           const states = g
@@ -499,22 +523,16 @@
             .data(topojson.feature(us, us.objects.states).features)
             .join("path")
             .on("click", clicked)
-            .attr("stroke", "grey")
+            .attr("stroke", "black")
             .attr("stroke-linecap", strokeLinecap)
             .attr("stroke-linejoin", strokeLinejoin)
-            .attr("stroke-width", 1)
+            .attr("stroke-width", 0.8)
             .attr("d", path);
-
-          if (outline != null)
-            svg
-              .append("path")
-              .attr("fill", fill)
-              .attr("stroke", "currentColor")
-              .attr("d", path(outline));
 
           let cl = 0;
 
           svg.call(zoom).on("wheel.zoom", null).on("dblclick.zoom", null);
+          // svg.call(zoom);
 
           function reset() {
             states.transition().style("stroke", null);
@@ -688,6 +706,57 @@
           }
         );
       }
+      let statesCodes = [
+        { id: "01", code: "AL" },
+        { id: "04", code: "AZ" },
+        { id: "05", code: "AR" },
+        { id: "06", code: "CA" },
+        { id: "08", code: "CO" },
+        { id: "09", code: "CT" },
+        { id: "10", code: "DE" },
+        { id: "11", code: "DC" },
+        { id: "12", code: "FL" },
+        { id: "13", code: "GA" },
+        { id: "16", code: "ID" },
+        { id: "17", code: "IL" },
+        { id: "18", code: "IN" },
+        { id: "19", code: "IA" },
+        { id: "20", code: "KS" },
+        { id: "21", code: "KY" },
+        { id: "22", code: "LA" },
+        { id: "23", code: "ME" },
+        { id: "24", code: "MD" },
+        { id: "25", code: "MA" },
+        { id: "26", code: "MI" },
+        { id: "27", code: "MN" },
+        { id: "28", code: "MS" },
+        { id: "29", code: "MO" },
+        { id: "30", code: "MT" },
+        { id: "31", code: "NE" },
+        { id: "32", code: "NV" },
+        { id: "33", code: "NH" },
+        { id: "34", code: "NJ" },
+        { id: "35", code: "NM" },
+        { id: "36", code: "NY" },
+        { id: "37", code: "NC" },
+        { id: "38", code: "ND" },
+        { id: "39", code: "OH" },
+        { id: "40", code: "OK" },
+        { id: "41", code: "OR" },
+        { id: "42", code: "PA" },
+        { id: "44", code: "RI" },
+        { id: "45", code: "SC" },
+        { id: "46", code: "SD" },
+        { id: "47", code: "TN" },
+        { id: "48", code: "TX" },
+        { id: "49", code: "UT" },
+        { id: "50", code: "VT" },
+        { id: "51", code: "VA" },
+        { id: "53", code: "WA" },
+        { id: "54", code: "WV" },
+        { id: "55", code: "WI" },
+        { id: "56", code: "WY" },
+      ];
     </script>
   </body>
 </html>
