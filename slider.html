@@ -51,6 +51,7 @@
       .label {
         margin-left: 10px;
         margin-right: 50px;
+        font-size: smaller;
       }
       .row {
         display: flex;
@@ -314,31 +315,31 @@
               <span class="high">10</span>
             </div>
           </div>
+          <div class="slider item">
+            <div class="label">
+              Avoid counties with high home rent (<span class="val" id="rentVal"
+                >1</span
+              >)
+            </div>
+            <div>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="rent"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
         </div>
-        <!--div class="slider item">
-          <div class="label">
-            Avoid counties with high home rent (<span class="val" id="rentVal"
-              >1</span
-            >)
-          </div>
-          <div>
-            <span class="low">1</span>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value="1"
-              class="slider"
-              id="rent"
-              onchange="changeColor()"
-            />
-            <span class="high">10</span>
-          </div>
-        </div -->
       </div>
       <div class="column" style="margin-top: 80px">
         <div id="map"></div>
-        <div class="tooltip"></div>
+        <!--div class="tooltip"></div-->
       </div>
     </div>
     <script>
@@ -346,19 +347,7 @@
       // Released under the ISC license.
       // https://observablehq.com/@d3/choropleth
       let data, us;
-      const range = [
-        "#ffffff",
-        "#f7fcf5",
-        "#e5f5f9",
-        "#ccece6",
-        "#99d8c9",
-        "#66c2a4",
-        "#41ae76",
-        "#238b45",
-        "#006d2c",
-        "#00441b",
-      ];
-
+      const range = d3.schemeGreens[9];
       async function getDataFromFiles() {
         [data, us] = await Promise.all([
           d3.csv("final.csv"),
@@ -380,8 +369,11 @@
           us.objects.states,
           (a, b) => a !== b
         );
+        // const range = d3.schemeGreens[9];
+        // const scale = d3.Sequential;
         const scale = d3.scaleQuantize;
         const domain = [0, document.getElementsByTagName("input").length]; // should be number of questions
+        // const domain = [0, 10]; // should be number of questions
 
         Choropleth(newData, {
           id: (d) => d.fips_id,
@@ -410,9 +402,10 @@
             value = () => undefined, // given d in data, returns the quantitative value
             title, // given a feature f and possibly a datum d, returns the hover text
             format, // optional format specifier for the title
-            scale = d3.scaleSequential, // type of color scale
+            // scale = d3.scaleSequential, // type of color scale
+            scale = d3.scaleQuantize, // type of color scale
             domain, // [min, max] values; input of color scale
-            range = d3.interpolateBlues, // output of color scale
+            range = d3.interpolateGreens, // output of color scale
             // width = 640, // outer width, in pixels
             width = 975, // outer width, in pixels
             height, // outer height, in pixels
@@ -445,6 +438,7 @@
           if (domain === undefined) domain = d3.extent(V);
 
           // Construct scales.
+          // const color = d3.scaleLinear(domain, range);
           const color = scale(domain, range);
           if (unknown !== undefined) color.unknown(unknown);
 
@@ -511,9 +505,9 @@
             .attr("d", path)
             .attr("stroke", "#bfbfbf")
             .attr("stroke-width", 0.6)
-            .attr("stroke-linejoin", "round")
-            .append("title")
-            .text((d, i) => title(d, Im.get(If[i])));
+            .attr("stroke-linejoin", "round");
+          // .append("title")
+          // .text((d, i) => title(d, Im.get(If[i])));
 
           const states = g
             .append("g")
@@ -528,6 +522,33 @@
             .attr("stroke-linejoin", strokeLinejoin)
             .attr("stroke-width", 0.8)
             .attr("d", path);
+
+          // create a tooltip
+          // var tooltip = d3
+          //   .select("#map")
+          //   .append("div")
+          //   .attr("class", "tooltip")
+          //   .style("position", "absolute")
+          //   .style("visibility", "hidden");
+          // // .text("I'm a circle!");
+
+          // //
+          // data.forEach(function (d) {
+          //   tooltip.innerHTML = d.county;
+          //   let selectedCounty = document.getElementById("county" + d.fips_id);
+          //   // .select(".div.tooltip")
+          //   selectedCounty.onmouseover = function () {
+          //     console.log(tooltip.innerHTML);
+          //     return tooltip.style("visibility", "visibile");
+          //   };
+          //   // .on("mouseover", function () {
+          //   //   return tooltip.style("visibility", "visibile");
+          //   // })
+          //   // .on("mouseout", function () {
+          //   //   return tooltip.style("visibility", "hidden");
+          //   // });
+          //   // console.log(tooltip.innerHTML);
+          // });
 
           let cl = 0;
 
@@ -586,6 +607,47 @@
       } //ready
       ready();
 
+      function processInputs(data) {
+        let inputs = getInputs();
+        const columnNames = Object.keys(data[0]);
+        // set result to 0
+        for (let i = 0; i < data.length; ++i) {
+          data[i].result = 0;
+        }
+        // console.table(data);
+        for (let i = 3; i < columnNames.length - 1; i++) {
+          // skip result
+          let carrentInput = inputs.find(
+            (inputs) => inputs.id === columnNames[i]
+          );
+          if (!carrentInput) {
+            continue;
+          }
+          let sortedData = sortDataAsc(data, carrentInput.id);
+          let slicedData = [];
+          if (carrentInput.val < 2) {
+            slicedData = sortedData;
+          } else {
+            slicedData = sortedData.slice(
+              0,
+              Math.round(sortedData.length * (1 - carrentInput.val / 10))
+            );
+          }
+          for (let ind = 0; ind < slicedData.length; ind++) {
+            for (let j = 0; j < data.length; ++j) {
+              if (data[j].fips_id === slicedData[ind].fips_id) {
+                data[j].result += parseInt(slicedData[ind][carrentInput.id]);
+              }
+            }
+          }
+        } //for
+        for (let i = 0; i < data.length; ++i) {
+          data[i].result = Math.round(data[i].result / inputs.length);
+        }
+        // console.table(sortedResults);
+        return data;
+      } // end processInputs()
+
       function getInputs() {
         let inputsVals = [];
         let inputs = document.getElementsByTagName("input");
@@ -596,54 +658,39 @@
           document.getElementById(labelId).innerHTML = val;
           inputsVals.push({ id: id, val: val });
         }
-        // console.log(Object.entries(inputsVals));
         return inputsVals;
       } //getInputs
 
-      function processInputs(data) {
-        let inputs = getInputs();
-        const columnNames = Object.keys(data[0]);
-        // set result to 0
-        for (let i = 0; i < data.length; ++i) {
-          data[i].result = 0;
-        }
-        // console.table(data);
-        for (let i = 3; i < columnNames.length - 1; i++) {
-          // for (let i = 3; i < columnNames.length - 1; i++) {
-          let sortedData = sortDataAsc(data, columnNames[i]);
-          let carrentInput = inputs.find(
-            (inputs) => inputs.id === columnNames[i]
-          );
-          // console.log("carrentInput", carrentInput);
-          //   console.log("carrentInput.val", carrentInput.val);
-          let slicedData = [];
-          if (carrentInput.val < 2) {
-            slicedData = sortedData;
-            // } else if (carrentInput.val > 9) {
-            //   slicedData = [];
-          } else {
-            slicedData = sortedData.slice(
-              0,
-              Math.round(sortedData.length * (1 - carrentInput.val / 10))
-            );
-          }
-          //   console.log(slicedData.length);
-          for (let ind = 0; ind < slicedData.length; ind++) {
-            slicedData[ind].result = slicedData[ind].result + 1;
-          }
-        } //for
-        // console.log(sortDataDesc(data, "result")[0]);
-        // console.table(data);
-        return data;
-      } // end processInputs()
-
       async function changeColor() {
         processInputs(data);
+        let sortedResults = sortDataAsc(data, "result");
+        // console.table(sortedResults);
+        let treshold = data.length / range.length;
+        // console.log("treshold", treshold, data.length, range.length);
         for (let i = 0; i < data.length; ++i) {
           let elem = document.getElementById("county" + data[i].fips_id);
           if (elem) {
-            elem.setAttribute("fill", range[data[i].result]);
-            // console.log("data[i].result", data[i].result, "range[data[i].result]", range[data[i].result]);
+            if (i < treshold) {
+              elem.style.fill = range[0];
+            } else if ((i < 2 * treshold) & (i >= treshold)) {
+              elem.style.fill = range[1];
+            } else if ((i < 3 * treshold) & (i >= 2 * treshold)) {
+              elem.style.fill = range[2];
+            } else if ((i < 4 * treshold) & (i >= 3 * treshold)) {
+              elem.style.fill = range[3];
+            } else if ((i < 5 * treshold) & (i >= 4 * treshold)) {
+              elem.style.fill = range[4];
+            } else if ((i < 6 * treshold) & (i >= 5 * treshold)) {
+              elem.style.fill = range[5];
+            } else if ((i < 7 * treshold) & (i >= 6 * treshold)) {
+              elem.style.fill = range[6];
+            } else if ((i < 8 * treshold) & (i >= 7 * treshold)) {
+              elem.style.fill = range[7];
+            } else if ((i <= 9 * treshold) & (i >= 8 * treshold)) {
+              elem.style.fill = range[8];
+            } else {
+              elem.style.fill = range[8];
+            }
           } else {
             console.log("elem not found");
           }
@@ -706,57 +753,6 @@
           }
         );
       }
-      let statesCodes = [
-        { id: "01", code: "AL" },
-        { id: "04", code: "AZ" },
-        { id: "05", code: "AR" },
-        { id: "06", code: "CA" },
-        { id: "08", code: "CO" },
-        { id: "09", code: "CT" },
-        { id: "10", code: "DE" },
-        { id: "11", code: "DC" },
-        { id: "12", code: "FL" },
-        { id: "13", code: "GA" },
-        { id: "16", code: "ID" },
-        { id: "17", code: "IL" },
-        { id: "18", code: "IN" },
-        { id: "19", code: "IA" },
-        { id: "20", code: "KS" },
-        { id: "21", code: "KY" },
-        { id: "22", code: "LA" },
-        { id: "23", code: "ME" },
-        { id: "24", code: "MD" },
-        { id: "25", code: "MA" },
-        { id: "26", code: "MI" },
-        { id: "27", code: "MN" },
-        { id: "28", code: "MS" },
-        { id: "29", code: "MO" },
-        { id: "30", code: "MT" },
-        { id: "31", code: "NE" },
-        { id: "32", code: "NV" },
-        { id: "33", code: "NH" },
-        { id: "34", code: "NJ" },
-        { id: "35", code: "NM" },
-        { id: "36", code: "NY" },
-        { id: "37", code: "NC" },
-        { id: "38", code: "ND" },
-        { id: "39", code: "OH" },
-        { id: "40", code: "OK" },
-        { id: "41", code: "OR" },
-        { id: "42", code: "PA" },
-        { id: "44", code: "RI" },
-        { id: "45", code: "SC" },
-        { id: "46", code: "SD" },
-        { id: "47", code: "TN" },
-        { id: "48", code: "TX" },
-        { id: "49", code: "UT" },
-        { id: "50", code: "VT" },
-        { id: "51", code: "VA" },
-        { id: "53", code: "WA" },
-        { id: "54", code: "WV" },
-        { id: "55", code: "WI" },
-        { id: "56", code: "WY" },
-      ];
     </script>
   </body>
 </html>
