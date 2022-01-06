@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>D3 v7 Example</title>
     <style>
@@ -24,6 +24,7 @@
 
       #menu .item {
         margin-bottom: 12px;
+        display: block;
       }
 
       #menu .item input {
@@ -49,9 +50,9 @@
         font-size: smaller;
       }
       .label {
-        margin-left: 10px;
-        margin-right: 50px;
+        margin: auto;
         font-size: smaller;
+        text-align: center;
       }
       .row {
         display: flex;
@@ -77,7 +78,54 @@
         opacity: 0.95;
         padding: 5px;
       }
+      .cardcontainer {
+        align-items: center;
+        justify-content: center;
+        margin-top: 50px;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        flex-wrap: wrap;
+        width: 80%;
+      }
+      .card {
+        /* Add shadows to create the "card" effect */
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+        padding: 2px 16px;
+        font-size: smaller;
+        width: 100%;
+        margin-bottom: 10px;
+      }
 
+      /* On mouse-over, add a deeper shadow */
+      .card:hover {
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+      }
+
+      .source {
+        font-style: italic;
+        font-size: small;
+        margin-left: 10px;
+      }
+      h4 {
+        margin-top: 0;
+        margin-bottom: 0;
+        margin-left: 0px;
+      }
+      p {
+        margin-top: 2px;
+        margin-bottom: 2px;
+      }
+      .remove {
+        background-color: #faf1f1;
+      }
+      .addbutton {
+        background-color: #ecfaed;
+      }
+      .slider {
+        overflow-x: auto;
+      }
       /* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
       @media only screen and (max-width: 1000px) {
         .row {
@@ -97,15 +145,18 @@
     <div class="row">
       <div class="column">
         <div id="menu">
-          <div class="slider item">
+          <div class="slider item" id="sunshineSlider" style="display: none">
             <div class="label">
-              Avoid counties with too much sunshine (<span
-                class="val"
-                id="sunshineVal"
-                >5</span
-              >)
+              Sunshine (<span class="val" id="sunshineVal">5</span>)
             </div>
             <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('sunshine')"
+              >
+                <span> &#215; </span>
+              </button>
               <span class="low">1</span>
               <input
                 type="range"
@@ -119,15 +170,19 @@
               <span class="high">10</span>
             </div>
           </div>
-          <div class="slider item">
+          <!--- end of slider -->
+          <div class="slider item" id="heatwavesSlider" style="display: none">
             <div class="label">
-              Avoid counties with abundant heat waves (<span
-                class="val"
-                id="heatwavesVal"
-                >5</span
-              >)
+              Heat Waves (<span class="val" id="heatwavesVal">5</span>)
             </div>
             <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('heatwaves')"
+              >
+                <span> &#215; </span>
+              </button>
               <span class="low">1</span>
               <input
                 type="range"
@@ -141,206 +196,84 @@
               <span class="high">10</span>
             </div>
           </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with abundant storms (<span
-                class="val"
-                id="stormVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="storm"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with long drought (<span
-                class="val"
-                id="droughtVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="drought"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with abundant wild fires (<span
-                class="val"
-                id="firesVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="fires"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with high state taxation (<span
-                class="val"
-                id="taxesVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="taxes"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with ahigh cost of living (<span
-                class="val"
-                id="costlivingVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="costliving"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties poor education (<span class="val" id="eduVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="edu"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with high crime level (<span
-                class="val"
-                id="crimeVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="crime"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with high home prices (<span
-                class="val"
-                id="homeVal"
-                >5</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="home"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
-          <div class="slider item">
-            <div class="label">
-              Avoid counties with high home rent (<span class="val" id="rentVal"
-                >1</span
-              >)
-            </div>
-            <div>
-              <span class="low">1</span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value="5"
-                class="slider"
-                id="rent"
-                onchange="changeColor()"
-              />
-              <span class="high">10</span>
-            </div>
-          </div>
+          <!--- end of slider -->
         </div>
+        <!-- end of menu -->
       </div>
+      <!-- end of column -->
+      <div class="column" style="margin-left: 30px">&nbsp;&nbsp;</div>
       <div class="column" style="margin-top: 80px">
         <div id="map"></div>
         <!--div class="tooltip"></div-->
       </div>
+      <!-- end of column -->
+    </div>
+    <!-- end of row -->
+    <div class="cardcontainer">
+      <div class="row">
+        <div class="card" id="sunshineLine">
+          <table>
+            <tr>
+              <td style="padding: 15px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('sunshine')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Sunshine</h4>
+                <p>
+                  Cummulative daily sunlight (1979-2011), deviation from
+                  average, % of maximum
+                </p>
+                <p class="source">
+                  Source:
+                  <a href="http://wonder.cdc.gov/NASA-INSOLAR.html"
+                    >North America Land Data Assimilation System (NLDAS) Daily
+                    Sunlight (insolation) for years 1991-2011 on CDC</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="heatwavesLine">
+          <table>
+            <tr>
+              <td style="padding: 15px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('heatwaves')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Heat Waves</h4>
+                <p>
+                  Number of heat wave days in May-September (1981-2010), % of
+                  maximum
+                </p>
+                <p class="source">
+                  Source:
+                  <a
+                    href="https://wonder.cdc.gov/NCA-heatwavedays-historic.html"
+                    >CDC WONDER</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
     </div>
     <script>
       // Copyright 2021 Observable, Inc.
@@ -372,7 +305,7 @@
         // const range = d3.schemeGreens[9];
         // const scale = d3.Sequential;
         const scale = d3.scaleQuantize;
-        const domain = [0, document.getElementsByTagName("input").length]; // should be number of questions
+        const domain = [0, getInputs().length]; // should be number of questions
         // const domain = [0, 10]; // should be number of questions
 
         Choropleth(newData, {
@@ -623,14 +556,14 @@
           if (!carrentInput) {
             continue;
           }
-          let sortedData = sortDataAsc(data, carrentInput.id);
+          let sortedData = sortDataDesc(data, carrentInput.id);
           let slicedData = [];
           if (carrentInput.val < 2) {
             slicedData = sortedData;
           } else {
             slicedData = sortedData.slice(
               0,
-              Math.round(sortedData.length * (1 - carrentInput.val / 10))
+              Math.round(sortedData.length * (1 - carrentInput.val / 10) + 1)
             );
           }
           for (let ind = 0; ind < slicedData.length; ind++) {
@@ -650,7 +583,13 @@
 
       function getInputs() {
         let inputsVals = [];
-        let inputs = document.getElementsByTagName("input");
+        let inputsHTMLcollection = document.querySelectorAll(
+          "input[type = range]"
+        );
+        //filter only visible inputs
+        let inputs = Array.from(inputsHTMLcollection).filter(
+          (x) => x.offsetWidth !== 0 || x.offsetHeight !== 0
+        );
         for (let i = 0; i < inputs.length; ++i) {
           let id = inputs[i].id;
           let val = inputs[i].value;
@@ -663,40 +602,84 @@
 
       async function changeColor() {
         processInputs(data);
-        let sortedResults = sortDataAsc(data, "result");
+        let maxResult = sortDataDesc(data, "result")[0].result;
         // console.table(sortedResults);
-        let treshold = data.length / range.length;
+        let treshold = maxResult / range.length; //range.length = 9
         // console.log("treshold", treshold, data.length, range.length);
         for (let i = 0; i < data.length; ++i) {
           let elem = document.getElementById("county" + data[i].fips_id);
           if (elem) {
-            if (i < treshold) {
+            if (data[i].result < treshold) {
               elem.style.fill = range[0];
-            } else if ((i < 2 * treshold) & (i >= treshold)) {
+            } else if (
+              (data[i].result < 2 * treshold) &
+              (data[i].result >= treshold)
+            ) {
               elem.style.fill = range[1];
-            } else if ((i < 3 * treshold) & (i >= 2 * treshold)) {
+            } else if (
+              (data[i].result < 3 * treshold) &
+              (data[i].result >= 2 * treshold)
+            ) {
               elem.style.fill = range[2];
-            } else if ((i < 4 * treshold) & (i >= 3 * treshold)) {
+            } else if (
+              (data[i].result < 4 * treshold) &
+              (data[i].result >= 3 * treshold)
+            ) {
               elem.style.fill = range[3];
-            } else if ((i < 5 * treshold) & (i >= 4 * treshold)) {
+            } else if (
+              (data[i].result < 5 * treshold) &
+              (data[i].result >= 4 * treshold)
+            ) {
               elem.style.fill = range[4];
-            } else if ((i < 6 * treshold) & (i >= 5 * treshold)) {
+            } else if (
+              (data[i].result < 6 * treshold) &
+              (data[i].result >= 5 * treshold)
+            ) {
               elem.style.fill = range[5];
-            } else if ((i < 7 * treshold) & (i >= 6 * treshold)) {
+            } else if (
+              (data[i].result < 7 * treshold) &
+              (data[i].result >= 6 * treshold)
+            ) {
               elem.style.fill = range[6];
-            } else if ((i < 8 * treshold) & (i >= 7 * treshold)) {
+            } else if (
+              (data[i].result < 8 * treshold) &
+              (data[i].result >= 7 * treshold)
+            ) {
               elem.style.fill = range[7];
-            } else if ((i <= 9 * treshold) & (i >= 8 * treshold)) {
+            } else if (
+              (data[i].result <= 9 * treshold) &
+              (data[i].result >= 8 * treshold)
+            ) {
               elem.style.fill = range[8];
             } else {
-              elem.style.fill = range[8];
+              elem.style.fill = null;
             }
+            // if (isNaN(sortedResults[sortedResults.length - 1].result)) {
+            //   elem.style.fill = null;
+            // }
           } else {
             console.log("elem not found");
           }
         }
       } // end changeColor()
-
+      function removeById(id) {
+        let sliderid = id + "Slider";
+        let elem = document.getElementById(sliderid);
+        elem.style.display = "none";
+        let lineId = id + "Line";
+        let lineElem = document.getElementById(lineId);
+        lineElem.style.display = "block";
+        changeColor();
+      }
+      function addById(id) {
+        let sliderid = id + "Slider";
+        let elem = document.getElementById(sliderid);
+        elem.style.display = "block";
+        let lineId = id + "Line";
+        let lineElem = document.getElementById(lineId);
+        lineElem.style.display = "none";
+        changeColor();
+      }
       function sortDataAsc(data, key) {
         return data.sort((a, b) => a[key] - b[key]);
       } //end sortData
