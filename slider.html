@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>D3 v7 Example</title>
+    <title>Multi-Parameter County Comparison</title>
     <style>
       body {
         font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
         font-size: 15pt;
       }
-      h1 {
+      h1,
+      h2,
+      h3 {
         text-align: center;
         font-weight: 500;
+        color: green;
       }
       svg {
         display: block;
@@ -122,6 +125,7 @@
       }
       .addbutton {
         background-color: #ecfaed;
+        white-space: nowrap;
       }
       .slider {
         overflow-x: auto;
@@ -141,19 +145,20 @@
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
   </head>
   <body>
-    <h1>Slider</h1>
+    <h1>Good County - Bad County</h1>
+    <h2>Multi-Parameter County Comparison and Mapping</h2>
     <div class="row">
       <div class="column">
         <div id="menu">
-          <div class="slider item" id="sunshineSlider" style="display: none">
+          <div class="slider item" id="stormSlider" style="display: none">
             <div class="label">
-              Sunshine (<span class="val" id="sunshineVal">5</span>)
+              Storms (<span class="val" id="stormVal">5</span>)
             </div>
             <div>
               <button
                 class="remove"
                 type="button"
-                onClick="removeById('sunshine')"
+                onClick="removeById('storm')"
               >
                 <span> &#215; </span>
               </button>
@@ -164,7 +169,59 @@
                 max="10"
                 value="5"
                 class="slider"
-                id="sunshine"
+                id="storm"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="droughtSlider" style="display: none">
+            <div class="label">
+              Drought (<span class="val" id="droughtVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('drought')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="drought"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="firesSlider" style="display: none">
+            <div class="label">
+              Wild Fires (<span class="val" id="firesVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('fires')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="fires"
                 onchange="changeColor()"
               />
               <span class="high">10</span>
@@ -197,6 +254,410 @@
             </div>
           </div>
           <!--- end of slider -->
+          <div class="slider item" id="floodSlider" style="display: none">
+            <div class="label">
+              Floods (<span class="val" id="floodVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('flood')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="flood"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="sunshineSlider" style="display: none">
+            <div class="label">
+              Sunshine (<span class="val" id="sunshineVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('sunshine')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="sunshine"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="temperatureSlider" style="display: none">
+            <div class="label">
+              Temperature Anomalies (<span class="val" id="temperatureVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('temperature')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="temperature"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div
+            class="slider item"
+            id="precipitationSlider"
+            style="display: none"
+          >
+            <div class="label">
+              Precipitation Anomalies (<span class="val" id="precipitationVal"
+                >5</span
+              >)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('precipitation')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="precipitation"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="airSlider" style="display: none">
+            <div class="label">
+              Air Quality (<span class="val" id="airVal">5</span>)
+            </div>
+            <div>
+              <button class="remove" type="button" onClick="removeById('air')">
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="air"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="taxesSlider" style="display: none">
+            <div class="label">
+              Taxes (<span class="val" id="taxesVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('taxes')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="taxes"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="livingSlider" style="display: none">
+            <div class="label">
+              Cost of living (<span class="val" id="livingVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('living')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="living"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="eduSlider" style="display: none">
+            <div class="label">
+              Education (<span class="val" id="eduVal">5</span>)
+            </div>
+            <div>
+              <button class="remove" type="button" onClick="removeById('edu')">
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="edu"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="crimeSlider" style="display: none">
+            <div class="label">
+              Crime (<span class="val" id="crimeVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('crime')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="crime"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="homeSlider" style="display: none">
+            <div class="label">
+              Home Prices (<span class="val" id="homeVal">5</span>)
+            </div>
+            <div>
+              <button class="remove" type="button" onClick="removeById('home')">
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="home"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="rentSlider" style="display: none">
+            <div class="label">
+              Rent (<span class="val" id="rentVal">5</span>)
+            </div>
+            <div>
+              <button class="remove" type="button" onClick="removeById('rent')">
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="rent"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="employSlider" style="display: none">
+            <div class="label">
+              Rate of Employment (<span class="val" id="employVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('employ')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="employ"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="doctorsSlider" style="display: none">
+            <div class="label">
+              Doctors availability (<span class="val" id="doctorsVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('doctors')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="doctors"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="mortalitySlider" style="display: none">
+            <div class="label">
+              Mortality (<span class="val" id="mortalityVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('mortality')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="mortality"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="amenitiesSlider" style="display: none">
+            <div class="label">
+              Natural Amenities (<span class="val" id="amenitiesVal">5</span>)
+            </div>
+            <div>
+              <button
+                class="remove"
+                type="button"
+                onClick="removeById('amenities')"
+              >
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="amenities"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
+          <div class="slider item" id="farSlider" style="display: none">
+            <div class="label">
+              Frontier and Remote Area (<span class="val" id="farVal">5</span>)
+            </div>
+            <div>
+              <button class="remove" type="button" onClick="removeById('far')">
+                <span> &#215; </span>
+              </button>
+              <span class="low">1</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value="5"
+                class="slider"
+                id="far"
+                onchange="changeColor()"
+              />
+              <span class="high">10</span>
+            </div>
+          </div>
+          <!--- end of slider -->
         </div>
         <!-- end of menu -->
       </div>
@@ -209,12 +670,170 @@
       <!-- end of column -->
     </div>
     <!-- end of row -->
+    <h3>Add Parameter</h3>
     <div class="cardcontainer">
+      <div class="row">
+        <div class="card" id="stormLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('storm')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Storm Events</h4>
+                <p>Number of Storm Events (2001-2021)</p>
+                <p class="source">
+                  Source:
+                  <a href="https://www.ncdc.noaa.gov/stormevents/ftp.jsp"
+                    >NOAA's National Weather Service (NWS)</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="droughtLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('drought')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Weeks in Drought</h4>
+                <p>
+                  Total Weeks in Drought (2015-2021) with severe, extreme and
+                  exceptional drought
+                </p>
+                <p class="comments">
+                  Severe Drought: Crop or pasture losses likely; Water shortages
+                  common; Water restrictions imposed.
+                </p>
+                <p>
+                  Extreme Drought: Major crop/pasture losses; Widespread water
+                  shortages or restrictions.
+                </p>
+                <p>
+                  Exceptional Drought: Exceptional and widespread crop/pasture
+                  losses; Shortages of water in reservoirs, streams, and wells
+                  creating water emergencies.
+                </p>
+                <p class="source">
+                  Source:
+                  <a
+                    href="from https://droughtmonitor.unl.edu/DmData/DataDownload/WeeksInDrought.aspx"
+                    >U.S. Drought Monitor</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="firesLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('fires')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Wild Fires</h4>
+                <p>Number of Wild Fires (2015-2021)</p>
+                <p class="source">
+                  Source:
+                  <a
+                    href="https://data-nifc.opendata.arcgis.com/datasets/nifc::wfigs-wildland-fire-locations-full-history/about"
+                    >National Interagency Fire Center (WFIGS)</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="heatwavesLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('heatwaves')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Heat Waves</h4>
+                <p>Number of heat wave days in May-September (1981-2010)</p>
+                <p class="source">
+                  Source:
+                  <a
+                    href="https://wonder.cdc.gov/NCA-heatwavedays-historic.html"
+                    >CDC WONDER</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="floodLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('flood')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Floods</h4>
+                <p>Properties at Risk of Floods at 2035, %</p>
+                <p class="source">
+                  Source:
+                  <a href="https://floodfactor.com/">Flood Factor</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
       <div class="row">
         <div class="card" id="sunshineLine">
           <table>
             <tr>
-              <td style="padding: 15px">
+              <td style="padding: 10px">
                 <button
                   type="button"
                   class="addbutton"
@@ -229,6 +848,7 @@
                   Cummulative daily sunlight (1979-2011), deviation from
                   average, % of maximum
                 </p>
+                <p class="comments">(Not too little, not too much)</p>
                 <p class="source">
                   Source:
                   <a href="http://wonder.cdc.gov/NASA-INSOLAR.html"
@@ -243,29 +863,386 @@
       </div>
       <!-- end of row -->
       <div class="row">
-        <div class="card" id="heatwavesLine">
+        <div class="card" id="temperatureLine">
           <table>
             <tr>
-              <td style="padding: 15px">
+              <td style="padding: 10px">
                 <button
                   type="button"
                   class="addbutton"
-                  onClick="addById('heatwaves')"
+                  onClick="addById('temperature')"
                 >
                   <span>&#43; add</span>
                 </button>
               </td>
               <td>
-                <h4>Heat Waves</h4>
+                <h4>Temperature Anomalities</h4>
+                <p>Average temperature anomalities (2001-2020)</p>
+                <p class="source">
+                  Source:
+                  <a
+                    href="https://www.ncdc.noaa.gov/cag/county/mapping/110/tavg/200112/12/value"
+                    >NOAA National Centers for Environmental information,
+                    Climate at a Glance: National Time Series</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="precipitationLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('precipitation')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Precipitation Anomalies</h4>
+                <p>Average precipitation anomalities (2001-2020)</p>
+                <p class="source">
+                  Source:
+                  <a
+                    href="https://www.ncdc.noaa.gov/cag/county/mapping/110/tavg/200112/12/value"
+                    >NOAA National Centers for Environmental information,
+                    Climate at a Glance: National Time Series</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="airLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('air')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Air Quality</h4>
                 <p>
-                  Number of heat wave days in May-September (1981-2010), % of
-                  maximum
+                  Total Unhealthy for Sensitive Groups Days, Unhealthy Days,
+                  Very Unhealthy Days and Hazardous Days (2020)
+                </p>
+                <p class="source">
+                  Source:
+                  <a href="https://www3.epa.gov/aircompare/"
+                    >U.S. Environmental Protection Agency. AirCompare.
+                  </a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="taxesLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('taxes')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Taxes</h4>
+                <p>Local and state taxation, %</p>
+                <p class="comments">(from low to high)</p>
+                <p class="source">
+                  Source:
+                  <a href="https://www.census.gov/programs-surveys/stc.html"
+                    >U.S. Census Bureau</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="livingLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('living')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Cost of Living</h4>
+                <p class="comments">
+                  (From low to high, data is approximation only)
+                </p>
+                <p class="source">
+                  Source:
+                  <a href="http://niche.com">niche.com</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="eduLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('edu')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Education</h4>
+                <p>Ranking of Educational districts</p>
+                <p class="source">
+                  Source:
+                  <a href="http://niche.com">niche.com</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="homeLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('home')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Home Prices</h4>
+                <p>Median Value of Owner-Occupied Housing Units</p>
+                <p class="comments">(From low to high)</p>
+                <p class="source">
+                  Source:
+                  <a href="https://www.census.gov/quickfacts"
+                    >U.S. Census Bureau</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="rentLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('rent')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Rent</h4>
+                <p>Median Gross Rent</p>
+                <p class="comments">(From low to high)</p>
+                <p class="source">
+                  Source:
+                  <a href="https://www.census.gov/quickfacts"
+                    >U.S. Census Bureau</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="employmentLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('employment')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Rate of Employment</h4>
+                <p>Employment Rate per 100,000 of population</p>
+                <p class="source">
+                  Source:
+                  <a href="https://www.bls.gov/web/cewdat.supp.toc.htm"
+                    >U.S. Bureau of Labor Statistics</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="doctorsLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('doctors')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Doctors availability</h4>
+                <p>All M.D. per 100,000 population</p>
+                <p class="source">
+                  Source:
+                  <a href="https://data.hrsa.gov/topics/health-workforce/ahrf"
+                    >Health Resources & Services Administration</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="mortalityLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('mortality')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Mortality</h4>
+                <p>Mortality per population counts 1999 to 2016, %</p>
+                <p class="comments">(Not too little, not too much)</p>
+                <p class="source">
+                  Source:
+                  <a href="https://wonder.cdc.gov/controller/datarequest/D140">
+                    Centers for Disease Control and Prevention (CDC), National
+                    Center for Health Statistics (NCHS), Compressed Mortality
+                    File (CMF) on CDC WONDER Online Database.</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="amenitiesLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('amenities')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Natural Amenities Scale</h4>
+                <p>
+                  The natural amenities scale is a measure of the physical
+                  characteristics of a county area that enhance the location as
+                  a place to live. The scale was constructed by combining six
+                  measures of climate, topography, and water area that reflect
+                  environmental qualities most people prefer.
                 </p>
                 <p class="source">
                   Source:
                   <a
-                    href="https://wonder.cdc.gov/NCA-heatwavedays-historic.html"
-                    >CDC WONDER</a
+                    href="https://www.ers.usda.gov/data-products/natural-amenities-scale/"
+                    >USDA Economic Research Service</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- end of row -->
+      <div class="row">
+        <div class="card" id="farLine">
+          <table>
+            <tr>
+              <td style="padding: 10px">
+                <button
+                  type="button"
+                  class="addbutton"
+                  onClick="addById('far')"
+                >
+                  <span>&#43; add</span>
+                </button>
+              </td>
+              <td>
+                <h4>Frontier and Remote Areas</h4>
+                <p>
+                  The term "frontier and remote" is used here to describe
+                  territory characterized by some combination of low population
+                  size and high geographic remoteness. FAR areas are defined in
+                  relation to the time it takes to travel by car to the edges of
+                  nearby Urban Areas (UAs).
+                </p>
+                <p class="source">
+                  Source:
+                  <a
+                    href="https://www.ers.usda.gov/data-products/frontier-and-remote-area-codes/"
+                    >USDA Economic Research Service</a
                   >
                 </p>
               </td>
@@ -563,7 +1540,7 @@
           } else {
             slicedData = sortedData.slice(
               0,
-              Math.round(sortedData.length * (1 - carrentInput.val / 10) + 1)
+              Math.round(sortedData.length * (1 - carrentInput.val / 10) + 100)
             );
           }
           for (let ind = 0; ind < slicedData.length; ind++) {
